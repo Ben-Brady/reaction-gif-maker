@@ -1,177 +1,186 @@
 <!doctype html>
 <html lang="en-US">
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>femboy</title>
     <style>
-html {
-    color: rgb(219, 222, 225);
-    background-color: rgb(49, 51, 56);
-    font-family: sans-serif;
-    font-size: 16px;
-}
+        html {
+            color: rgb(219, 222, 225);
+            background-color: rgb(49, 51, 56);
+            font-family: sans-serif;
+            font-size: 16px;
+        }
 
-a:link, a:visited {
-    color: rgb(0, 168, 252);
-    text-decoration: none;
-}
+        a:link,
+        a:visited {
+            color: rgb(0, 168, 252);
+            text-decoration: none;
+        }
 
-a:hover {
-    text-decoration: underline;
-}
+        a:hover {
+            text-decoration: underline;
+        }
 
-button {
-    font-size: 16px;
-    color: rgb(219, 222, 225);
-    background-color: rgb(78, 80, 88);
-    border: none;
-    border-radius: 5px;
-    padding: 5px 12px;
-    margin-right: 8px;
-}
+        button {
+            font-size: 16px;
+            color: rgb(219, 222, 225);
+            background-color: rgb(78, 80, 88);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 12px;
+            margin-right: 8px;
+        }
 
-button:hover {
-    background-color: rgb(109, 111, 120);
-}
+        button:hover {
+            background-color: rgb(109, 111, 120);
+        }
 
-button:active {
-    background-color: rgb(128, 132, 142);
-}
+        button:active {
+            background-color: rgb(128, 132, 142);
+        }
 
-#canvass {
-    height: auto;
-    max-width: 100%;
-}
+        #canvass {
+            height: auto;
+            max-width: 100%;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <div class="hide_after_first_load">
-      <h1>drop image here :3</h1>
-      <label for="upload_button">or </label>
-      <button id="upload_button" tabindex=0>upload a file</button>
-      <button id="download_button" tabindex=0 style="display:none;">download</button>
-      <p>
-      click or tap to add transparent speech bubble.<br>
-      then just right click -&gt; save image, or use the download button :)
-      </p>
+        <h1>drop image here :3</h1>
+        <label for="upload_button">or </label>
+        <button id="upload_button" tabindex=0>upload a file</button>
+        <button id="download_button" tabindex=0 style="display:none;">download</button>
+        <p>
+            click or tap to add transparent speech bubble.<br>
+            Click the download button to save :)
+        </p>
     </div>
 
     <canvas id="canvass" draggable="false" style="display:none;"></canvas>
     <!-- hidden stuff -->
     <div style="display:none;">
-      <input id="file_input" type="file" multiple="false"></input>
-      <a id="download_link"></a>
+        <input id="file_input" type="file" multiple="false"></input>
+        <a id="download_link"></a>
     </div>
     <script src="gif.js"></script>
     <script>
-"use strict";
+        "use strict";
 
-let imageLoaded = false;
-let image = new Image();
+        let imageLoaded = false;
+        let image = new Image();
 
-const canvas = window.canvass;
-const ctx = canvas.getContext("2d");
-if (canvas === null) {
-    throw new Error("failed to get canvas rendering context");
-}
-ctx.fillStyle = "white";
-
-document.addEventListener("dragover", event => {
-    event.preventDefault();
-});
-document.addEventListener("drop", async event => {
-    event.preventDefault();
-
-    let file = event.dataTransfer.files[0];
-    await loadFile(file);
-});
-
-window.upload_button.addEventListener("click", () => {
-    window.file_input.click()
-});
-window.file_input.addEventListener("change", async () => {
-    const file = file_input.files[0];
-    if (file !== undefined) {
-        await loadFile(file);
-    }
-});
-
-canvas.addEventListener("click", event => {
-    // if not left click
-    if (event.button !== 0) {
-        return;
-    }
-
-    ctx.globalCompositeOperation = "source-over";
-    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.beginPath();
-    ctx.ellipse(
-        image.width / 2, 0, // center coords
-        (image.width / 2) * 1.05, image.height * 0.1, // width and height
-        0, // rotation
-        0, 2 * Math.PI); // start and end angles
-    ctx.moveTo(image.width, 0);
-    const canvasScaleFactor = (image.width / canvas.clientWidth);
-    ctx.lineTo(
-        event.offsetX * canvasScaleFactor,
-        event.offsetY * canvasScaleFactor,
-    );
-    ctx.lineTo(image.width * 0.85, 0);
-    ctx.moveTo(image.width, 0);
-    ctx.fill();
-});
-
-window.download_button.addEventListener("click", () => {
-    var gif = new GIF({
-        workers: 2,
-        quality: 10
-    });
-    gif.addFrame(canvas, {copy: true});
-    gif.on('finished', (blob) => {
-        window.open(URL.createObjectURL(blob));
-    });
-    gif.render();
-});
-
-async function loadFile(fileHandle) {
-    let reader = new FileReader();
-    reader.readAsDataURL(fileHandle)
-    reader.onloadend = async function() {
-        let img = new Image();
-        await new Promise(resolve => {
-            img.onload = resolve;
-            img.src = reader.result;
-        });
-        image = img;
-
-        canvas.width = image.width;
-        canvas.height = image.height;
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-        if (!imageLoaded) {
-            onFirstImageLoad();
-            imageLoaded = true;
+        const canvas = window.canvass;
+        const ctx = canvas.getContext("2d");
+        if (canvas === null) {
+            throw new Error("failed to get canvas rendering context");
         }
-    }
-}
+        ctx.fillStyle = "white";
 
-function onFirstImageLoad() {
-    for (const element of document.querySelectorAll(".hide_after_first_load")) {
-        element.style.display = "none";
-    }
-    // unhide canvas and download button
-    canvas.style.display = "unset";
-    window.download_button.style.display = "unset";
-    // move button below canvas
-    canvas.after(
-        document.createElement("br"),
-        window.upload_button,
-        window.download_button,
-    );
-}
+        document.addEventListener("dragover", event => {
+            event.preventDefault();
+        });
+        document.addEventListener("drop", async event => {
+            event.preventDefault();
+
+            let file = event.dataTransfer.files[0];
+            await loadFile(file);
+        });
+
+        window.upload_button.addEventListener("click", () => {
+            window.file_input.click()
+        });
+        window.file_input.addEventListener("change", async () => {
+            const file = file_input.files[0];
+            if (file !== undefined) {
+                await loadFile(file);
+            }
+        });
+
+        canvas.addEventListener("click", event => {
+            // if not left click
+            if (event.button !== 0) {
+                return;
+            }
+
+            ctx.globalCompositeOperation = "source-over";
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.beginPath();
+            ctx.ellipse(
+                image.width / 2, 0, // center coords
+                (image.width / 2) * 1.05, image.height * 0.1, // width and height
+                0, // rotation
+                0, 2 * Math.PI); // start and end angles
+            ctx.moveTo(image.width, 0);
+            const canvasScaleFactor = (image.width / canvas.clientWidth);
+            ctx.lineTo(
+                event.offsetX * canvasScaleFactor,
+                event.offsetY * canvasScaleFactor,
+            );
+            ctx.lineTo(image.width * 0.85, 0);
+            ctx.moveTo(image.width, 0);
+            ctx.fill();
+        });
+
+        window.download_button.addEventListener("click", () => {
+            const filename = `kiuh${Math.floor(Math.random() * (2 ** 32))}.gif`;
+
+            var gif = new GIF({
+                workers: 2,
+                quality: 10
+            });
+            gif.addFrame(canvas, { copy: true });
+
+            gif.on('finished', (blob) => {
+                const link = document.getElementById("download_link");
+                link.download = filename;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+            gif.render();
+        });
+
+        async function loadFile(fileHandle) {
+            let reader = new FileReader();
+            reader.readAsDataURL(fileHandle)
+            reader.onloadend = async function () {
+                let img = new Image();
+                await new Promise(resolve => {
+                    img.onload = resolve;
+                    img.src = reader.result;
+                });
+                image = img;
+
+                canvas.width = image.width;
+                canvas.height = image.height;
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+                if (!imageLoaded) {
+                    onFirstImageLoad();
+                    imageLoaded = true;
+                }
+            }
+        }
+
+        function onFirstImageLoad() {
+            for (const element of document.querySelectorAll(".hide_after_first_load")) {
+                element.style.display = "none";
+            }
+            // unhide canvas and download button
+            canvas.style.display = "unset";
+            window.download_button.style.display = "unset";
+            // move button below canvas
+            canvas.after(
+                document.createElement("br"),
+                window.upload_button,
+                window.download_button,
+            );
+        }
     </script>
-  </body>
+</body>
+
 </html>
