@@ -78,7 +78,7 @@
         if (canvas === null) {
             throw new Error("failed to get canvas rendering context");
         }
-        ctx.fillStyle = "white";
+        ctx.fillStyle = "#00ff00";
 
         document.addEventListener("dragover", event => {
             event.preventDefault();
@@ -132,10 +132,10 @@
 
             var gif = new GIF({
                 workers: 2,
-                quality: 10
+                quality: 10,
+                transparent: 0x00ff00,
             });
-            gif.addFrame(canvas, { copy: true });
-
+            gif.addFrame(canvas, { copy: true, dispose: 1 });
             gif.on('finished', (blob) => {
                 const link = document.getElementById("download_link");
                 link.download = filename;
