@@ -133,7 +133,7 @@
             var gif = new GIF({
                 workers: 2,
                 quality: 10,
-                transparent: 0x00ff00,
+                transparent: 0x000000,
             });
             gif.addFrame(canvas, { copy: true, dispose: 1 });
             gif.on('finished', (blob) => {
